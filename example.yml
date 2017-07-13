@@ -1,0 +1,8 @@
+---
+- name: Configure servers
+  hosts: xxx
+  remote_user: root
+
+  roles:
+    - common
+    - docker
