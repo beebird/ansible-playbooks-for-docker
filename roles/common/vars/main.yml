@@ -1,0 +1,15 @@
+---
+elrepo_repo_version: "{% if ansible_distribution_major_version == 7 %}7.0-2{% else %}6-6{% endif %}"
+elrepo_rpm_path: https://elrepo.org/linux/elrepo/el{{ ansible_distribution_major_version }}/{{ ansible_architecture }}/RPMS/elrepo-release-{{ elrepo_repo_version }}.el{{ ansible_distribution_major_version }}.elrepo.noarch.rpm
+yum_packages_to_install:
+  - git
+  - zsh
+  - tmux
+  - python-setuptools
+  - jq
+  - expect
+python_packages_to_install:
+  - docker-compose
+  - aliyuncli
+  - aliyun-python-sdk-ecs
+  - aliyun-python-sdk-slb

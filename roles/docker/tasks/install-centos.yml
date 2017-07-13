@@ -1,0 +1,51 @@
+---
+- name: Check if docker-ce is installed
+  #  shell: yum list installed {{ docker_package }}| grep {{ docker_package }} | awk '{print $2}'
+  yum:
+    list={{ docker_package }}
+  vars: 
+    docker_package: 'docker-ce'
+  register: pkg
+
+  #- debug:
+  #    var:  pkg.results|selectattr("yumstate", "match", "installed")|list|length
+
+- name: purge old docker packages
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - docker
+    - docker-common
+    - container-selinux
+    - docker-selinux
+    - docker-engine
+  when: ansible_os_family == 'RedHat' and
+        pkg.results|selectattr("yumstate", "match", "installed")|list|length == 0
+
+- name: add docker-ce repository (centos7)
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: 0644
+
+- name: install docker-ce
+  yum:
+    name: docker-ce
+  when: ansible_os_family == 'RedHat' and
+        pkg.results|selectattr("yumstate", "match", "installed")|list|length == 0
+    # update_cache: yes
+
+    #- name: create docker config dir
+    #  file:
+    #    path: /etc/docker
+    #    state: directory
+    #
+    #- name: set storage driver
+    #  blockinfile:
+    #    path: /etc/docker/daemon.json
+    #    create: yes
+    #    block: |
+    #      {
+    #        "storage-driver": "devicemapper"
+    #      }

@@ -1,0 +1,27 @@
+---
+- name: Install EPEL repo
+  yum:
+    name: "{{ elrepo_rpm_path }}"
+    state: present
+
+- name: Print RPM path
+  debug:
+    msg: "EPEL rpm path: {{ elrepo_rpm_path }}"
+
+- name: Import EPEL GPG key
+  rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-elrepo.org
+    state: present
+
+- name: Install basic software
+  yum: pkg={{item}} state=installed
+  with_items: "{{ yum_packages_to_install }}"
+
+- name: Install python modules
+  pip: name="{{ python_packages_to_install | join(' ') }}"
+- name: Install new kernel
+  yum: pkg=kernel-ml enablerepo=elrepo-kernel state=installed
+  notify:
+    - set default boot kernel
+    - reboot a host and wait for it to return
+

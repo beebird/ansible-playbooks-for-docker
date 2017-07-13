@@ -1,0 +1,13 @@
+---
+- name: deploy docker ce
+  include: roles/docker/tasks/install-centos.yml
+
+- name: apply docker option config
+  template:
+    src: docker-options.conf
+    dest: /etc/systemd/system/docker.service.d/options.conf
+    owner: root
+    mode: 0644
+
+- name: ensure docker is running (and enable id at boot)
+  service: name=docker state=started enabled=yes
